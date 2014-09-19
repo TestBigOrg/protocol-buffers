@@ -39,16 +39,24 @@ var isString = function(def) {
   }
 }
 
+var isNumber = function(def) {
+  try {
+    return !!def && typeof JSON.parse(def) === 'number'
+  } catch (err) {
+    return false
+  }
+}
+
 var defaultValue = function(f, def) {
   if (f.repeated) return '[]'
 
   switch (f.type) {
     case 'string':
-    return isString(def) ? def : '""'
+    return isString(def) ? def : 'null'
 
     case 'bool':
-    if (def === 'true') return 'true'
-    return 'false'
+    if (def) return def
+    return 'null'
 
     case 'float':
     case 'double':
@@ -62,7 +70,7 @@ var defaultValue = function(f, def) {
     case 'int32':
     case 'sint64':
     case 'sint32':
-    return ''+parseInt(def || 0)
+    return isNumber(def) ? ''+parseInt(def || 0) : 'null'
 
     default:
     return 'null'
